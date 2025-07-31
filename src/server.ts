@@ -5,16 +5,12 @@ import mongoose from "mongoose";
 import app from "./app";
 import { envVars } from "./app/config/env";
 import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
-// import { seedSuperAdmin } from "./app/modules/utils/seedSuperAdmin";
-// import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 let server: Server;
 
 const startServer = async () => {
   try {
-    await mongoose.connect(
-      envVars.DB_URL,
-    );
+    await mongoose.connect(envVars.DB_URL);
 
     console.log("Connected to MongoDB");
 
@@ -27,9 +23,9 @@ const startServer = async () => {
 };
 
 (async () => {
-    await startServer()
-    await seedSuperAdmin()
-})()
+  await startServer();
+  await seedSuperAdmin();
+})();
 
 process.on("unhandledRejection", (error) => {
   console.error("Unhandled Rejection... Server shutting down:", error);

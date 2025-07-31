@@ -27,14 +27,7 @@ const credentialsLogin = async (payload: Partial<IUser>) => {
   if (!isPasswordMatched) {
     throw new AppError("Incorrect Password", httpStatus.BAD_REQUEST);
   }
-  // const jwtPayload = {
-  //     userId: isUserExist._id,
-  //     email: isUserExist.email,
-  //     role: isUserExist.role
-  // }
-  // const accessToken = generateToken(jwtPayload, envVars.JWT_ACCESS_SECRET, envVars.JWT_ACCESS_EXPIRES)
 
-  // const refreshToken = generateToken(jwtPayload, envVars.JWT_REFRESH_SECRET, envVars.JWT_REFRESH_EXPIRES)
 
   const userTokens = createUserTokens(isUserExist);
 
@@ -79,10 +72,6 @@ const getNewAccessToken = async (refreshToken: string) => {
     email: isUserExist.email,
     role: isUserExist.role,
   };
-
-  // const accessToken = jwt.sign(jwtPayload, "secret", {
-  //     expiresIn: "1d"
-  // })
 
   const accessToken = generateToken(
     jwtPayload,

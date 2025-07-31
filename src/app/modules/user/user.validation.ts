@@ -61,7 +61,7 @@ export const createUserZodSchema = z.object({
         })
         .optional(),
     role: z
-        // .enum(["ADMIN", "GUIDE", "USER", "SUPER_ADMIN"])
+        // .enum(["ADMIN", "AGENT", "USER", "SUPER_ADMIN"])
         .enum(Object.values(Role) as [string])
         .optional(),
     isActive: z
