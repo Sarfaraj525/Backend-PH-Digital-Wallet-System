@@ -113,3 +113,35 @@ Edit
   "approve": true  // or false to suspend
 }
 Response: Updated agent info (without password)
+
+
+📁 Digital Wallet API
+├── 🔐 Auth
+│   ├── POST /auth/register (User)
+│   ├── POST /auth/register (Agent)
+│   ├── POST /auth/login
+├── 👤 User
+│   ├── GET /users/me
+│   ├── GET /wallets/me
+│   ├── PATCH /wallets/block/:id (Admin)
+│   ├── PATCH /wallets/unblock/:id (Admin)
+├── 💰 Wallet
+│   ├── POST /wallets/add-money
+│   ├── POST /wallets/withdraw
+│   ├── POST /wallets/send
+│   ├── GET /wallets/:id (Admin)
+│   ├── GET /wallets/all (Admin)
+├── 🔁 Transactions
+│   ├── GET /transactions/me
+│   ├── GET /transactions (Admin)
+├── 🧑‍💼 Agent
+│   ├── POST /agent/cash-in
+│   ├── POST /agent/cash-out
+│   ├── GET /agent/commissions
+│   ├── PATCH /agents/approve/:id (Admin)
+│   ├── PATCH /agents/suspend/:id (Admin)
+├── 🛡️ Admin
+│   ├── GET /admin/users
+│   ├── GET /admin/agents
+│   ├── GET /admin/transactions
+│   ├── GET /admin/wallets

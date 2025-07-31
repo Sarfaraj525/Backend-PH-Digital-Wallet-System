@@ -5,6 +5,7 @@ import notFound from "./app/middlewares/notFound";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { router } from "./app/routes";
 import cookieParser from "cookie-parser";
+import { AdminRoutes } from "./app/modules/admin/admin.route";
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.get("/", (req: Request, res: Response) => {
     message: "Welcome to the Digital Wallet API System Backend",
   });
 });
+
+app.use("/api/v1/admin", AdminRoutes);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 app.use(globalErrorHandler);
