@@ -1,50 +1,65 @@
-import { Request, Response, NextFunction } from "express";
-import * as AdminService from "./admin.service";
-import httpStatus from "http-status-codes";
+// src/modules/admin/admin.controller.ts
 
-export const getAllUsersAgents = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const users = await AdminService.getAllUsersAgents();
-    res.status(httpStatus.OK).json({
-      success: true,
-      message: "Users and agents retrieved successfully",
-      data: users,
-    });
-  } catch (error) {
-    next(error);
-  }
+import { Request, Response } from "express";
+import { User } from "../user/user.model";
+import { Wallet } from "../wallet/wallet.model";
+import { Transaction } from "../transaction/transaction.model";
+import { Role } from "../user/user.interface";
+
+// Get all users or agents
+export const getAllUsers = async (req: Request, res: Response) => {
+  const users = await User.find();
+  res.status(200).json({ success: true, data: users });
 };
 
-export const blockUnblockWallet = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const walletId = req.params.id;
-    const { block } = req.body;
-
-    const wallet = await AdminService.blockUnblockWallet(walletId, block);
-
-    res.status(httpStatus.OK).json({
-      success: true,
-      message: `Wallet has been ${block ? "blocked" : "unblocked"}`,
-      data: wallet,
-    });
-  } catch (error) {
-    next(error);
-  }
+// Get all wallets
+export const getAllWallets = async (req: Request, res: Response) => {
+  const wallets = await Wallet.find().populate("user", "email role");
+  res.status(200).json({ success: true, data: wallets });
 };
 
-export const approveSuspendAgent = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const agentId = req.params.id;
-    const { approve } = req.body;
+// Get all transactions
+export const getAllTransactions = async (req: Request, res: Response) => {
+  const transactions = await Transaction.find()
+    .sort({ createdAt: -1 })
+    .populate("sender", "email role")
+    .populate("receiver", "email role");
 
-    const agent = await AdminService.approveSuspendAgent(agentId, approve);
+  res.status(200).json({ success: true, data: transactions });
+};
 
-    res.status(httpStatus.OK).json({
-      success: true,
-      message: `Agent has been ${approve ? "approved" : "suspended"}`,
-      data: agent,
-    });
-  } catch (error) {
-    next(error);
+// Block a user wallet
+export const blockWallet = async (req: Request, res: Response) => {
+  const { walletId } = req.params;
+  const wallet = await Wallet.findByIdAndUpdate(walletId, { isBlocked: true }, { new: true });
+  if (!wallet) return res.status(404).json({ success: false, message: "Wallet not found" });
+  res.status(200).json({ success: true, message: "Wallet blocked", data: wallet });
+};
+
+// Unblock a user wallet
+export const unblockWallet = async (req: Request, res: Response) => {
+  const { walletId } = req.params;
+  const wallet = await Wallet.findByIdAndUpdate(walletId, { isBlocked: false }, { new: true });
+  if (!wallet) return res.status(404).json({ success: false, message: "Wallet not found" });
+  res.status(200).json({ success: true, message: "Wallet unblocked", data: wallet });
+};
+
+// Approve an agent
+export const approveAgent = async (req: Request, res: Response) => {
+  const { agentId } = req.params;
+  const user = await User.findByIdAndUpdate(agentId, { isActive: true }, { new: true });
+  if (!user || user.role !== Role.AGENT) {
+    return res.status(404).json({ success: false, message: "Agent not found" });
   }
+  res.status(200).json({ success: true, message: "Agent approved", data: user });
+};
+
+// Suspend an agent
+export const suspendAgent = async (req: Request, res: Response) => {
+  const { agentId } = req.params;
+  const user = await User.findByIdAndUpdate(agentId, { isActive: false }, { new: true });
+  if (!user || user.role !== Role.AGENT) {
+    return res.status(404).json({ success: false, message: "Agent not found" });
+  }
+  res.status(200).json({ success: true, message: "Agent suspended", data: user });
 };

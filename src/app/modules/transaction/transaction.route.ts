@@ -1,32 +1,18 @@
 import express from "express";
-import {
-  addMoneyController,
-  withdrawController,
-  sendMoneyController,
-  cashInController,
-  cashOutController,
-  myTransactionsController,
-} from "./transaction.controller";
+import { cashInController, cashOutController } from "./transaction.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
-import { validateRequest } from "../../middlewares/validateRequest";
-import { sendMoneySchema } from "./sendMoney.validation";
+
+import { Role } from "../user/user.interface";
+import { getMyTransactions } from "./transaction.service";
 
 const router = express.Router();
 
-// USER routes
-router.post("/add-money", checkAuth("user"), addMoneyController);
-router.post("/withdraw", checkAuth("user"), withdrawController);
-router.post(
-  "/send",
-  checkAuth("user"),
-  validateRequest(sendMoneySchema),
-  sendMoneyController
-);
-router.get("/my-transactions", checkAuth("user"), myTransactionsController);
+router.get("/me", checkAuth(Role.USER), getMyTransactions);
 
 // AGENT routes
-router.post("/cash-in", checkAuth("agent"), cashInController);
-router.post("/cash-out", checkAuth("agent"), cashOutController);
+router.post("/cash-in", checkAuth("AGENT"), cashInController);
+
+router.post("/cash-out", checkAuth("AGENT"), cashOutController);
 
 // export default router;
 export const TransactionRoutes = router;

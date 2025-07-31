@@ -6,6 +6,7 @@ import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { router } from "./app/routes";
 import cookieParser from "cookie-parser";
 import { AdminRoutes } from "./app/modules/admin/admin.route";
+import { TransactionRoutes } from "./app/modules/transaction/transaction.route";
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/admin", AdminRoutes);
+
+
+app.use('/api/v1/transaction', TransactionRoutes);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 app.use(globalErrorHandler);
