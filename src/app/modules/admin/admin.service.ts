@@ -5,7 +5,9 @@ import httpStatus from "http-status-codes";
 import { Role } from "../user/user.interface";
 
 export const getAllUsersAgents = async () => {
-  const users = await User.find({ role: { $in: [Role.USER, Role.AGENT] } }).select("-password");
+  const users = await User.find({
+    role: { $in: [Role.USER, Role.AGENT] },
+  }).select("-password");
   return users;
 };
 
@@ -21,7 +23,10 @@ export const blockUnblockWallet = async (walletId: string, block: boolean) => {
   return wallet;
 };
 
-export const approveSuspendAgent = async (agentId: string, approve: boolean) => {
+export const approveSuspendAgent = async (
+  agentId: string,
+  approve: boolean
+) => {
   const agent = await User.findById(agentId);
 
   if (!agent || agent.role !== Role.AGENT) {
@@ -36,4 +41,3 @@ export const approveSuspendAgent = async (agentId: string, approve: boolean) => 
 
   return agentObj;
 };
-

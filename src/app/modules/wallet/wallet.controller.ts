@@ -5,8 +5,11 @@ import httpStatus from "http-status-codes";
 import { Transaction } from "../transaction/transaction.model";
 import mongoose from "mongoose";
 
-// GET /wallet/me
-export const getWallet = async (req: Request, res: Response, next: NextFunction) => {
+export const getWallet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const wallet = await Wallet.findOne({ user: req.user.userId });
 
@@ -24,30 +27,33 @@ export const getWallet = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-// ✅ GET /wallet/:userId
-export const getWalletByUserId = async (req: Request, res: Response, next: NextFunction) => {
+export const getWalletByUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { userId } = req.params;
 
     const wallet = await Wallet.findOne({ user: userId });
 
-
-
     if (!wallet) {
-      throw new AppError("Wallet not found for the given user", httpStatus.NOT_FOUND);
+      throw new AppError(
+        "Wallet not found for the given user",
+        httpStatus.NOT_FOUND
+      );
     }
 
+    wallet.balance += req.body?.amount;
 
-wallet.balance+= req.body?.amount;
+    await wallet.save();
 
-await wallet.save();
+    const transaction = await Transaction.create({
+      type: "add_money",
+      amount: req.body?.amount,
+      receiver: userId,
+    });
 
-const transaction = await Transaction.create({
-        type: "add_money",
-        amount: req.body?.amount,
-        receiver: userId,
-        });
-    
     res.status(200).json({
       success: true,
       message: "transaction retrieved successfully",
@@ -58,31 +64,41 @@ const transaction = await Transaction.create({
   }
 };
 
-// ✅ adds money to user wallet
-
-
-
-export const addMoneyToOwnWallet = async (req: Request, res: Response, next: NextFunction) => {
+export const addMoneyToOwnWallet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
 
     const { amount } = req.body;
     if (!amount || amount <= 0) {
-      throw new AppError("Amount must be a positive number", httpStatus.BAD_REQUEST);
+      throw new AppError(
+        "Amount must be a positive number",
+        httpStatus.BAD_REQUEST
+      );
     }
 
-    const wallet = await Wallet.findOne({ user: req.user.userId }).session(session);
+    const wallet = await Wallet.findOne({ user: req.user.userId }).session(
+      session
+    );
     if (!wallet) throw new AppError("Wallet not found", httpStatus.NOT_FOUND);
 
     wallet.balance += amount;
     await wallet.save({ session });
 
-    const transaction = await Transaction.create([{
-      type: "add_money",
-      amount,
-      receiver: req.user.userId,
-    }], { session });
+    const transaction = await Transaction.create(
+      [
+        {
+          type: "add_money",
+          amount,
+          receiver: req.user.userId,
+        },
+      ],
+      { session }
+    );
 
     await session.commitTransaction();
     session.endSession();
@@ -99,11 +115,18 @@ export const addMoneyToOwnWallet = async (req: Request, res: Response, next: Nex
   }
 };
 
-export const withdrawFromOwnWallet = async (req: Request, res: Response, next: NextFunction) => {
+export const withdrawFromOwnWallet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { amount } = req.body;
     if (!amount || amount <= 0) {
-      throw new AppError("Amount must be a positive number", httpStatus.BAD_REQUEST);
+      throw new AppError(
+        "Amount must be a positive number",
+        httpStatus.BAD_REQUEST
+      );
     }
 
     const wallet = await Wallet.findOne({ user: req.user.userId });
@@ -132,7 +155,11 @@ export const withdrawFromOwnWallet = async (req: Request, res: Response, next: N
   }
 };
 
-export const sendMoneyToAnotherUser = async (req: Request, res: Response, next: NextFunction) => {
+export const sendMoneyToAnotherUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -140,18 +167,31 @@ export const sendMoneyToAnotherUser = async (req: Request, res: Response, next: 
     const { receiverId, amount } = req.body;
 
     if (!receiverId || !amount || amount <= 0) {
-      throw new AppError("Receiver and valid amount required", httpStatus.BAD_REQUEST);
+      throw new AppError(
+        "Receiver and valid amount required",
+        httpStatus.BAD_REQUEST
+      );
     }
 
     if (receiverId === req.user.userId) {
-      throw new AppError("Cannot send money to yourself", httpStatus.BAD_REQUEST);
+      throw new AppError(
+        "Cannot send money to yourself",
+        httpStatus.BAD_REQUEST
+      );
     }
 
-    const senderWallet = await Wallet.findOne({ user: req.user.userId }).session(session);
-    const receiverWallet = await Wallet.findOne({ user: receiverId }).session(session);
+    const senderWallet = await Wallet.findOne({
+      user: req.user.userId,
+    }).session(session);
+    const receiverWallet = await Wallet.findOne({ user: receiverId }).session(
+      session
+    );
 
     if (!senderWallet || !receiverWallet) {
-      throw new AppError("Sender or receiver wallet not found", httpStatus.NOT_FOUND);
+      throw new AppError(
+        "Sender or receiver wallet not found",
+        httpStatus.NOT_FOUND
+      );
     }
 
     if (senderWallet.balance < amount) {
@@ -164,12 +204,17 @@ export const sendMoneyToAnotherUser = async (req: Request, res: Response, next: 
     await senderWallet.save({ session });
     await receiverWallet.save({ session });
 
-    const transaction = await Transaction.create([{
-      type: "send",
-      amount,
-      sender: req.user.userId,
-      receiver: receiverId,
-    }], { session });
+    const transaction = await Transaction.create(
+      [
+        {
+          type: "send",
+          amount,
+          sender: req.user.userId,
+          receiver: receiverId,
+        },
+      ],
+      { session }
+    );
 
     await session.commitTransaction();
     session.endSession();
@@ -210,6 +255,3 @@ export const getMyWalletTransactions = async (
     next(error);
   }
 };
-
-
-

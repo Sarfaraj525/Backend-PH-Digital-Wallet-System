@@ -27,7 +27,7 @@ app.use("/api/v1/admin", AdminRoutes);
 
 app.use('/api/v1/transaction', TransactionRoutes);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 app.use(globalErrorHandler);
 
 app.use(notFound);

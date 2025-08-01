@@ -13,7 +13,7 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
         statusCode = err.statusCode;
         message = err.message;
     } else if (err instanceof Error) {
-        statusCode = 500; // Default to Bad Request for generic errors
+        statusCode = 500; 
         message = err.message;
     }
 

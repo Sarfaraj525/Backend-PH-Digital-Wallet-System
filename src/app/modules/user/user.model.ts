@@ -33,8 +33,6 @@ const userSchema = new Schema<IUser>(
     },
     isVerified: { type: Boolean, default: "false" },
     auths: [authProviderSchema],
-    // bookings: [{ type: Schema.Types.ObjectId, ref: "Booking" }],
-    // guides: [{ type: Schema.Types.ObjectId, ref: "Guide" }]
   },
   {
     timestamps: true,

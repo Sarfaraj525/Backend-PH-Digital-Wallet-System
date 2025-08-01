@@ -1,4 +1,3 @@
-// src/modules/wallet/wallet.service.ts
 import { Wallet } from "./wallet.model";
 
 export const getWalletByUser = async (userId: string) => {

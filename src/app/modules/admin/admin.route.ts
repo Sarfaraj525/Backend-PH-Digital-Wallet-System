@@ -1,5 +1,3 @@
-// src/modules/admin/admin.routes.ts
-
 import express from "express";
 import {
   getAllUsers,
@@ -20,7 +18,11 @@ router.get("/wallets", checkAuth(Role.ADMIN), getAllWallets);
 router.get("/transactions", checkAuth(Role.ADMIN), getAllTransactions);
 
 router.patch("/wallets/block/:walletId", checkAuth(Role.ADMIN), blockWallet);
-router.patch("/wallets/unblock/:walletId", checkAuth(Role.ADMIN), unblockWallet);
+router.patch(
+  "/wallets/unblock/:walletId",
+  checkAuth(Role.ADMIN),
+  unblockWallet
+);
 
 router.patch("/agents/approve/:agentId", checkAuth(Role.ADMIN), approveAgent);
 router.patch("/agents/suspend/:agentId", checkAuth(Role.ADMIN), suspendAgent);

@@ -57,13 +57,3 @@ process.on("SIGTERM", () => {
     process.exit(1);
   }
 });
-
-// unhandledRejection
-
-// Promise.reject(new Error("I forgot to catch this promise"));
-
-// uncaughtException
-
-// throw new Error("I forgot to catch this local error");
-
-// signal Termination

@@ -1,4 +1,3 @@
-// import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
@@ -7,11 +6,9 @@ import { User } from "./user.model";
 import bcryptjs from "bcryptjs";
 import httpStatus from "http-status-codes";
 import { Wallet } from "../wallet/wallet.model";
-// import { Wallet } from "../wallet/wallet.model";
-
 
 const createUser = async (payload: Partial<IUser>) => {
-  const { email, password, ...rest } = payload;
+  const { email, password, role, ...rest } = payload;
 
   const isUserExist = await User.findOne({ email });
   if (isUserExist) {
@@ -28,14 +25,17 @@ const createUser = async (payload: Partial<IUser>) => {
     providerId: email as string,
   };
 
+  const validRoles = Object.values(Role);
+  const userRole = role && validRoles.includes(role) ? role : Role.USER;
+
   const user = await User.create({
     email,
     password: hashedPassword,
+    role: userRole,
     auths: [authProvider],
     ...rest,
   });
 
-   // ✅ Create a wallet immediately after user registration
   await Wallet.create({
     user: user._id,
     balance: 50,
@@ -97,7 +97,6 @@ const getAllUsers = async () => {
     },
   };
 };
-
 
 export const UserServices = {
   createUser,

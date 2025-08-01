@@ -1,4 +1,3 @@
-// src/modules/wallet/wallet.interface.ts
 import { Document, Types } from "mongoose";
 
 export interface IWallet extends Document {

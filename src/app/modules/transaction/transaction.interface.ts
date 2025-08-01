@@ -1,4 +1,3 @@
-// src/modules/transaction/transaction.interface.ts
 import { Document, Types } from "mongoose";
 
 export type TransactionType =

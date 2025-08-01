@@ -4,10 +4,12 @@ import { IsActive, IUser } from "../user/user.interface";
 import httpStatus from "http-status-codes";
 import { User } from "../user/user.model";
 import bcryptjs from "bcryptjs";
-// import jwt from "jsonwebtoken";
 import { generateToken, verifyToken } from "../../utils/jwt";
 import { envVars } from "../../config/env";
-import { createNewAccessTokenWithRefreshToken, createUserTokens } from "../../utils/userTokens";
+import {
+  createNewAccessTokenWithRefreshToken,
+  createUserTokens,
+} from "../../utils/userTokens";
 import { JwtPayload } from "jsonwebtoken";
 
 const credentialsLogin = async (payload: Partial<IUser>) => {
@@ -28,12 +30,8 @@ const credentialsLogin = async (payload: Partial<IUser>) => {
     throw new AppError("Incorrect Password", httpStatus.BAD_REQUEST);
   }
 
-
   const userTokens = createUserTokens(isUserExist);
 
-  // delete isUserExist.password;
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: pass, ...rest } = isUserExist.toObject();
 
   return {
@@ -82,20 +80,19 @@ const getNewAccessToken = async (refreshToken: string) => {
   const { password: pass, ...rest } = isUserExist.toObject();
 
   const getNewAccessToken = async (refreshToken: string) => {
-    const newAccessToken = await createNewAccessTokenWithRefreshToken(refreshToken)
+    const newAccessToken = await createNewAccessTokenWithRefreshToken(
+      refreshToken
+    );
 
     return {
-        accessToken: newAccessToken
-    }
-
-}
+      accessToken: newAccessToken,
+    };
+  };
 
   return {
     accessToken,
   };
 };
-
-//user - login - token (email, role, _id) - booking / payment / booking / payment cancel - token
 
 export const AuthServices = {
   credentialsLogin,

@@ -1,4 +1,3 @@
-// src/modules/transaction/transaction.model.ts
 import { Schema, model } from "mongoose";
 import { ITransaction } from "./transaction.interface";
 
@@ -14,4 +13,7 @@ const transactionSchema = new Schema<ITransaction>(
   { timestamps: true }
 );
 
-export const Transaction = model<ITransaction>("Transaction", transactionSchema);
+export const Transaction = model<ITransaction>(
+  "Transaction",
+  transactionSchema
+);

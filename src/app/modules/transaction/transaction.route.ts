@@ -9,10 +9,8 @@ const router = express.Router();
 
 router.get("/me", checkAuth(Role.USER), getMyTransactions);
 
-// AGENT routes
 router.post("/cash-in", checkAuth("AGENT"), cashInController);
 
 router.post("/cash-out", checkAuth("AGENT"), cashOutController);
 
-// export default router;
 export const TransactionRoutes = router;

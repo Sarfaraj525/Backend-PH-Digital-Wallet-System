@@ -1,5 +1,3 @@
-// src/modules/transaction/sendMoney.validation.ts
-
 import { z } from "zod";
 
 export const sendMoneySchema = z.object({

@@ -9,12 +9,9 @@ import {
   getMyTransactions,
 } from "./transaction.service";
 
-
-
-
 export const addMoneyController = async (req: Request, res: Response) => {
   try {
-    const userId = req.user._id as string; // consistently using _id
+    const userId = req.user._id as string;
     const result = await addMoney(userId, req.body.amount);
     res.status(200).json(result);
   } catch (error: any) {
