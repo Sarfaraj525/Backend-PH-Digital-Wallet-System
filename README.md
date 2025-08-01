@@ -5,10 +5,10 @@ LIVE LINK: https://backend-ph-digital-wallet-system.vercel.app/
 Base URL: http://localhost:5000/api/v1
 
 ✅ Auth Endpoints
-Method	Endpoint	                Description
+Method	   Endpoint	                   Description
 POST	  /auth/register	          -Register as user/agent
 POST	  /auth/login	              -Login and get JWT
-POST    /auth/refresh-token       -New access token or refresh token
+POST      /auth/refresh-token         -New access token or refresh token
 
 👤 User Endpoints
 🔐 Requires role: User
@@ -21,10 +21,10 @@ GET     /user/all-users           -Initial all users
 wallet related with user...........
 
 POST	  /wallet/me/add-money	      Add money to own wallet
-POST    /wallet/:userID             -add money
+POST      /wallet/:userID             -add money
 POST	  /wallet/me/withdraw 	      -Withdraw from wallet
 POST	  /wallet/me/send-money	      -Send money to another user
-GET	    /wallet/me	                -View own wallet
+GET	      /wallet/me	              -View own wallet
 
 Transactions History................
 
@@ -33,7 +33,7 @@ GET     /wallet/my-transactions    -get all own transactions history
 🧑‍💼 Agent Endpoints
 🔐 Requires role: Agent
 
-Method	  Endpoint	                  Description
+Method	    Endpoint	                      Description
 POST	    /transaction/cash-in	      -Cash-in to user wallet
 POST	    /transaction/cash-out	      -Cash-out from user wallet
 
@@ -43,12 +43,12 @@ POST	    /transaction/cash-out	      -Cash-out from user wallet
 
 Method	Endpoint	                          Description
 GET	    /admin/users	                      -View all users and agents
-GET	    /admin/wallets	                    -View all wallets
-GET	    /admin/transactions	                -View all transactions
-PATCH	  /admin/wallets/block/:walletID	    -Block a wallet
-PATCH	  /admin/wallets/unblock/:walletID	  -Unblock a wallet
-PATCH	  /admin/agents/approve/:agentId	    -Approve an agent
-PATCH	  /admin/agents/suspend/:agentId	    -Suspend an agent
+GET	    /admin/wallets	                      -View all wallets
+GET	    /admin/transactions	                  -View all transactions
+PATCH	 /admin/wallets/block/:walletID	      -Block a wallet
+PATCH	 /admin/wallets/unblock/:walletID	  -Unblock a wallet
+PATCH	 /admin/agents/approve/:agentId	      -Approve an agent
+PATCH	 /admin/agents/suspend/:agentId	      -Suspend an agent
 
 
 
