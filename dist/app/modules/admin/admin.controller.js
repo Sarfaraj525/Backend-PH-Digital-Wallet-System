@@ -1,5 +1,4 @@
 "use strict";
-// src/modules/admin/admin.controller.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,19 +14,16 @@ const user_model_1 = require("../user/user.model");
 const wallet_model_1 = require("../wallet/wallet.model");
 const transaction_model_1 = require("../transaction/transaction.model");
 const user_interface_1 = require("../user/user.interface");
-// Get all users or agents
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const users = yield user_model_1.User.find();
     res.status(200).json({ success: true, data: users });
 });
 exports.getAllUsers = getAllUsers;
-// Get all wallets
 const getAllWallets = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const wallets = yield wallet_model_1.Wallet.find().populate("user", "email role");
     res.status(200).json({ success: true, data: wallets });
 });
 exports.getAllWallets = getAllWallets;
-// Get all transactions
 const getAllTransactions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const transactions = yield transaction_model_1.Transaction.find()
         .sort({ createdAt: -1 })
@@ -36,7 +32,6 @@ const getAllTransactions = (req, res) => __awaiter(void 0, void 0, void 0, funct
     res.status(200).json({ success: true, data: transactions });
 });
 exports.getAllTransactions = getAllTransactions;
-// Block a user wallet
 const blockWallet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { walletId } = req.params;
     const wallet = yield wallet_model_1.Wallet.findByIdAndUpdate(walletId, { isBlocked: true }, { new: true });
@@ -49,7 +44,6 @@ const blockWallet = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         .json({ success: true, message: "Wallet blocked", data: wallet });
 });
 exports.blockWallet = blockWallet;
-// Unblock a user wallet
 const unblockWallet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { walletId } = req.params;
     const wallet = yield wallet_model_1.Wallet.findByIdAndUpdate(walletId, { isBlocked: false }, { new: true });
@@ -62,7 +56,6 @@ const unblockWallet = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         .json({ success: true, message: "Wallet unblocked", data: wallet });
 });
 exports.unblockWallet = unblockWallet;
-// Approve an agent
 const approveAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { agentId } = req.params;
     const user = yield user_model_1.User.findByIdAndUpdate(agentId, { isActive: true }, { new: true });
@@ -74,7 +67,6 @@ const approveAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         .json({ success: true, message: "Agent approved", data: user });
 });
 exports.approveAgent = approveAgent;
-// Suspend an agent
 const suspendAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { agentId } = req.params;
     const user = yield user_model_1.User.findByIdAndUpdate(agentId, { isActive: false }, { new: true });

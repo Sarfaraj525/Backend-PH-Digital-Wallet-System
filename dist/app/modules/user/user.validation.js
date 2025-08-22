@@ -44,7 +44,8 @@ exports.updateUserZodSchema = zod_1.default.object({
     name: zod_1.default
         .string({ invalid_type_error: "Name must be string" })
         .min(2, { message: "Name must be at least 2 characters long." })
-        .max(50, { message: "Name cannot exceed 50 characters." }).optional(),
+        .max(50, { message: "Name cannot exceed 50 characters." })
+        .optional(),
     password: zod_1.default
         .string({ invalid_type_error: "Password must be string" })
         .min(8, { message: "Password must be at least 8 characters long." })
@@ -56,7 +57,8 @@ exports.updateUserZodSchema = zod_1.default.object({
     })
         .regex(/^(?=.*\d)/, {
         message: "Password must contain at least 1 number.",
-    }).optional(),
+    })
+        .optional(),
     phone: zod_1.default
         .string({ invalid_type_error: "Phone Number must be string" })
         .regex(/^(?:\+8801\d{9}|01\d{9})$/, {
@@ -67,9 +69,7 @@ exports.updateUserZodSchema = zod_1.default.object({
         // .enum(["ADMIN", "AGENT", "USER", "SUPER_ADMIN"])
         .enum(Object.values(user_interface_1.Role))
         .optional(),
-    isActive: zod_1.default
-        .enum(Object.values(user_interface_1.IsActive))
-        .optional(),
+    isActive: zod_1.default.enum(Object.values(user_interface_1.IsActive)).optional(),
     isDeleted: zod_1.default
         .boolean({ invalid_type_error: "isDeleted must be true or false" })
         .optional(),
@@ -79,5 +79,5 @@ exports.updateUserZodSchema = zod_1.default.object({
     address: zod_1.default
         .string({ invalid_type_error: "Address must be string" })
         .max(200, { message: "Address cannot exceed 200 characters." })
-        .optional()
+        .optional(),
 });

@@ -19,7 +19,9 @@ const user_interface_1 = require("../modules/user/user.interface");
 const user_model_1 = require("../modules/user/user.model");
 const seedSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const isSuperAdminExist = yield user_model_1.User.findOne({ email: env_1.envVars.SUPER_ADMIN_EMAIL });
+        const isSuperAdminExist = yield user_model_1.User.findOne({
+            email: env_1.envVars.SUPER_ADMIN_EMAIL,
+        });
         if (isSuperAdminExist) {
             console.log("Super Admin Already Exists!");
             return;
@@ -28,16 +30,16 @@ const seedSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
         const hashedPassword = yield bcryptjs_1.default.hash(env_1.envVars.SUPER_ADMIN_PASSWORD, Number(env_1.envVars.BCRYPT_SALT_ROUND));
         const authProvider = {
             provider: "credentials",
-            providerId: env_1.envVars.SUPER_ADMIN_EMAIL
+            providerId: env_1.envVars.SUPER_ADMIN_EMAIL,
         };
         const payload = {
-            _id: new user_model_1.User()._id, // Generate a new ObjectId
+            _id: new user_model_1.User()._id,
             name: "Super admin",
             role: user_interface_1.Role.SUPER_ADMIN,
             email: env_1.envVars.SUPER_ADMIN_EMAIL,
             password: hashedPassword,
             isVerified: true,
-            auths: [authProvider]
+            auths: [authProvider],
         };
         const superadmin = yield user_model_1.User.create(payload);
         console.log("Super Admin Created Successfuly! \n");

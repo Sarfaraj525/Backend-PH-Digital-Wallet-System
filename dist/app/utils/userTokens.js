@@ -23,13 +23,13 @@ const createUserTokens = (user) => {
     const jwtPayload = {
         userId: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
     };
     const accessToken = (0, jwt_1.generateToken)(jwtPayload, env_1.envVars.JWT_ACCESS_SECRET, env_1.envVars.JWT_ACCESS_EXPIRES);
     const refreshToken = (0, jwt_1.generateToken)(jwtPayload, env_1.envVars.JWT_REFRESH_SECRET, env_1.envVars.JWT_REFRESH_EXPIRES);
     return {
         accessToken,
-        refreshToken
+        refreshToken,
     };
 };
 exports.createUserTokens = createUserTokens;
@@ -39,7 +39,8 @@ const createNewAccessTokenWithRefreshToken = (refreshToken) => __awaiter(void 0,
     if (!isUserExist) {
         throw new AppError_1.default("User does not exist", http_status_codes_1.default.BAD_REQUEST);
     }
-    if (isUserExist.isActive === user_interface_1.IsActive.BLOCKED || isUserExist.isActive === user_interface_1.IsActive.INACTIVE) {
+    if (isUserExist.isActive === user_interface_1.IsActive.BLOCKED ||
+        isUserExist.isActive === user_interface_1.IsActive.INACTIVE) {
         throw new AppError_1.default(`User is ${isUserExist.isActive}`, http_status_codes_1.default.BAD_REQUEST);
     }
     if (isUserExist.isDeleted) {
@@ -48,7 +49,7 @@ const createNewAccessTokenWithRefreshToken = (refreshToken) => __awaiter(void 0,
     const jwtPayload = {
         userId: isUserExist._id,
         email: isUserExist.email,
-        role: isUserExist.role
+        role: isUserExist.role,
     };
     const accessToken = (0, jwt_1.generateToken)(jwtPayload, env_1.envVars.JWT_ACCESS_SECRET, env_1.envVars.JWT_ACCESS_EXPIRES);
     return accessToken;

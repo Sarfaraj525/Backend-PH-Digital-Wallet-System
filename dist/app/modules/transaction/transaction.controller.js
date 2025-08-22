@@ -13,7 +13,7 @@ exports.myTransactionsController = exports.cashOutController = exports.cashInCon
 const transaction_service_1 = require("./transaction.service");
 const addMoneyController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userId = req.user._id; // consistently using _id
+        const userId = req.user._id;
         const result = yield (0, transaction_service_1.addMoney)(userId, req.body.amount);
         res.status(200).json(result);
     }

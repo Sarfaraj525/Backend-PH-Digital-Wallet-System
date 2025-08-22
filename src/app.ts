@@ -7,12 +7,16 @@ import { router } from "./app/routes";
 import cookieParser from "cookie-parser";
 import { AdminRoutes } from "./app/modules/admin/admin.route";
 import { TransactionRoutes } from "./app/modules/transaction/transaction.route";
+import { envVars } from "./app/config/env";
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+  origin: envVars.FRONTEND_URL,
+  credentials: true,
+}));
 
 app.use("/api/v1", router);
 

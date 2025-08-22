@@ -18,7 +18,6 @@ const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const transaction_model_1 = require("../transaction/transaction.model");
 const mongoose_1 = __importDefault(require("mongoose"));
-// GET /wallet/me
 const getWallet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const wallet = yield wallet_model_1.Wallet.findOne({ user: req.user.userId });
@@ -36,7 +35,6 @@ const getWallet = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getWallet = getWallet;
-// ✅ GET /wallet/:userId
 const getWalletByUserId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
@@ -63,7 +61,6 @@ const getWalletByUserId = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.getWalletByUserId = getWalletByUserId;
-// ✅ adds money to user wallet
 const addMoneyToOwnWallet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     try {
@@ -77,11 +74,13 @@ const addMoneyToOwnWallet = (req, res, next) => __awaiter(void 0, void 0, void 0
             throw new AppError_1.default("Wallet not found", http_status_codes_1.default.NOT_FOUND);
         wallet.balance += amount;
         yield wallet.save({ session });
-        const transaction = yield transaction_model_1.Transaction.create([{
+        const transaction = yield transaction_model_1.Transaction.create([
+            {
                 type: "add_money",
                 amount,
                 receiver: req.user.userId,
-            }], { session });
+            },
+        ], { session });
         yield session.commitTransaction();
         session.endSession();
         res.status(200).json({
@@ -138,7 +137,9 @@ const sendMoneyToAnotherUser = (req, res, next) => __awaiter(void 0, void 0, voi
         if (receiverId === req.user.userId) {
             throw new AppError_1.default("Cannot send money to yourself", http_status_codes_1.default.BAD_REQUEST);
         }
-        const senderWallet = yield wallet_model_1.Wallet.findOne({ user: req.user.userId }).session(session);
+        const senderWallet = yield wallet_model_1.Wallet.findOne({
+            user: req.user.userId,
+        }).session(session);
         const receiverWallet = yield wallet_model_1.Wallet.findOne({ user: receiverId }).session(session);
         if (!senderWallet || !receiverWallet) {
             throw new AppError_1.default("Sender or receiver wallet not found", http_status_codes_1.default.NOT_FOUND);
@@ -150,12 +151,14 @@ const sendMoneyToAnotherUser = (req, res, next) => __awaiter(void 0, void 0, voi
         receiverWallet.balance += amount;
         yield senderWallet.save({ session });
         yield receiverWallet.save({ session });
-        const transaction = yield transaction_model_1.Transaction.create([{
+        const transaction = yield transaction_model_1.Transaction.create([
+            {
                 type: "send",
                 amount,
                 sender: req.user.userId,
                 receiver: receiverId,
-            }], { session });
+            },
+        ], { session });
         yield session.commitTransaction();
         session.endSession();
         res.status(200).json({

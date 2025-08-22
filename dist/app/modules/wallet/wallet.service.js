@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateBalance = exports.getWalletByUser = void 0;
-// src/modules/wallet/wallet.service.ts
 const wallet_model_1 = require("./wallet.model");
 const getWalletByUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield wallet_model_1.Wallet.findOne({ user: userId });

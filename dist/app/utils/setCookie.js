@@ -5,7 +5,7 @@ const setAuthCookie = (res, tokenInfo) => {
     if (tokenInfo.accessToken) {
         res.cookie("accessToken", tokenInfo.accessToken, {
             httpOnly: true,
-            secure: false
+            secure: false,
         });
     }
     if (tokenInfo.refreshToken) {

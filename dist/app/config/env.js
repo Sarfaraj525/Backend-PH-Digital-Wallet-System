@@ -27,7 +27,6 @@ const loadEnvVariables = () => {
         PORT: process.env.PORT || "5000",
         DB_URL: process.env.DB_URL || "",
         NODE_ENV: process.env.NODE_ENV,
-        // BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
         BCRYPT_SALT_ROUND: Number(process.env.BCRYPT_SALT_ROUND),
         JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
         JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES,

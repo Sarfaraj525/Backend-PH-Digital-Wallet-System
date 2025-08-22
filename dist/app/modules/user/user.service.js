@@ -42,13 +42,9 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         provider: "credentials",
         providerId: email,
     };
-    // Validate role explicitly - allow only known roles, else default to USER
     const validRoles = Object.values(user_interface_1.Role);
     const userRole = role && validRoles.includes(role) ? role : user_interface_1.Role.USER;
-    console.log(validRoles);
-    console.log(userRole);
     const user = yield user_model_1.User.create(Object.assign({ email, password: hashedPassword, role: userRole, auths: [authProvider] }, rest));
-    // Create a wallet immediately after user registration
     yield wallet_model_1.Wallet.create({
         user: user._id,
         balance: 50,

@@ -30,7 +30,6 @@ const user_interface_1 = require("../user/user.interface");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const user_model_1 = require("../user/user.model");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-// import jwt from "jsonwebtoken";
 const jwt_1 = require("../../utils/jwt");
 const env_1 = require("../../config/env");
 const userTokens_1 = require("../../utils/userTokens");
@@ -45,8 +44,6 @@ const credentialsLogin = (payload) => __awaiter(void 0, void 0, void 0, function
         throw new AppError_1.default("Incorrect Password", http_status_codes_1.default.BAD_REQUEST);
     }
     const userTokens = (0, userTokens_1.createUserTokens)(isUserExist);
-    // delete isUserExist.password;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const _a = isUserExist.toObject(), { password: pass } = _a, rest = __rest(_a, ["password"]);
     return {
         accessToken: userTokens.accessToken,
@@ -84,7 +81,6 @@ const getNewAccessToken = (refreshToken) => __awaiter(void 0, void 0, void 0, fu
         accessToken,
     };
 });
-//user - login - token (email, role, _id) - booking / payment / booking / payment cancel - token
 exports.AuthServices = {
     credentialsLogin,
     getNewAccessToken,

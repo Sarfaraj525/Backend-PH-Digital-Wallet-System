@@ -1,5 +1,4 @@
 "use strict";
-// src/modules/transaction/sendMoney.validation.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMoneySchema = void 0;
 const zod_1 = require("zod");

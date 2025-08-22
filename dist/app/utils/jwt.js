@@ -7,7 +7,7 @@ exports.verifyToken = exports.generateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const generateToken = (payload, secret, expiresIn) => {
     const token = jsonwebtoken_1.default.sign(payload, secret, {
-        expiresIn
+        expiresIn,
     });
     return token;
 };

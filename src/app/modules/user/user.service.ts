@@ -7,7 +7,7 @@ import bcryptjs from "bcryptjs";
 import httpStatus from "http-status-codes";
 import { Wallet } from "../wallet/wallet.model";
 
-const createUser = async (payload: Partial<IUser>) => {
+const createUser = async (payload: Partial<IUser>)  => {
   const { email, password, role, ...rest } = payload;
 
   const isUserExist = await User.findOne({ email });
@@ -98,8 +98,16 @@ const getAllUsers = async () => {
   };
 };
 
+const getMe = async (userId: string) => {
+    const user = await User.findById(userId).select("-password");
+    return {
+        data: user
+    }
+};
+
 export const UserServices = {
   createUser,
   getAllUsers,
   updateUser,
+  getMe
 };

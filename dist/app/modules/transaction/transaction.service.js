@@ -17,7 +17,6 @@ const transaction_model_1 = require("./transaction.model");
 const wallet_model_1 = require("../wallet/wallet.model");
 const user_model_1 = require("../user/user.model");
 const mongoose_1 = __importDefault(require("mongoose"));
-// Add Money
 const addMoney = (userId, amount) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     try {
@@ -40,7 +39,6 @@ const addMoney = (userId, amount) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.addMoney = addMoney;
-// Withdraw Money
 const withdrawMoney = (userId, amount) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     try {
@@ -52,7 +50,9 @@ const withdrawMoney = (userId, amount) => __awaiter(void 0, void 0, void 0, func
             throw new Error("Insufficient balance");
         wallet.balance -= amount;
         yield wallet.save({ session });
-        yield transaction_model_1.Transaction.create([{ type: "withdraw", amount, sender: userId }], { session });
+        yield transaction_model_1.Transaction.create([{ type: "withdraw", amount, sender: userId }], {
+            session,
+        });
         yield session.commitTransaction();
         return { message: "Withdraw successful" };
     }
@@ -65,7 +65,6 @@ const withdrawMoney = (userId, amount) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.withdrawMoney = withdrawMoney;
-// Send Money (User to User)
 const sendMoney = (senderId, receiverEmail, amount) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     try {
@@ -88,12 +87,14 @@ const sendMoney = (senderId, receiverEmail, amount) => __awaiter(void 0, void 0,
         receiverWallet.balance += amount;
         yield senderWallet.save({ session });
         yield receiverWallet.save({ session });
-        yield transaction_model_1.Transaction.create([{
+        yield transaction_model_1.Transaction.create([
+            {
                 type: "send_money",
                 amount,
                 sender: senderId,
                 receiver: receiver._id,
-            }], { session });
+            },
+        ], { session });
         yield session.commitTransaction();
         return { message: "Money sent successfully" };
     }
@@ -106,7 +107,6 @@ const sendMoney = (senderId, receiverEmail, amount) => __awaiter(void 0, void 0,
     }
 });
 exports.sendMoney = sendMoney;
-// Cash In (Agent adds money to user)
 const cashIn = (agentId, userEmail, amount) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     try {
@@ -132,7 +132,6 @@ const cashIn = (agentId, userEmail, amount) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.cashIn = cashIn;
-// Cash Out (Agent withdraws money from user)
 const cashOut = (agentId, userEmail, amount) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     try {
@@ -160,7 +159,6 @@ const cashOut = (agentId, userEmail, amount) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.cashOut = cashOut;
-// Get My Transactions (for user/agent)
 const getMyTransactions = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const transactions = yield transaction_model_1.Transaction.find({
         $or: [{ sender: userId }, { receiver: userId }],
