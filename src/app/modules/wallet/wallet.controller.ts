@@ -4,12 +4,32 @@ import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
 import { Transaction } from "../transaction/transaction.model";
 import mongoose from "mongoose";
+import { User } from "../user/user.model";
 
-export const getWallet = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+// export const getWallet = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const wallet = await Wallet.findOne({ user: req.user.userId });
+
+//     if (!wallet) {
+//       throw new AppError("Wallet not found", httpStatus.NOT_FOUND);
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Wallet retrieved successfully",
+//       data: wallet,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+
+export const getWallet = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const wallet = await Wallet.findOne({ user: req.user.userId });
 
@@ -17,15 +37,13 @@ export const getWallet = async (
       throw new AppError("Wallet not found", httpStatus.NOT_FOUND);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Wallet retrieved successfully",
-      data: wallet,
-    });
+    // Return wallet directly (so frontend can do wallet.balance)
+    res.status(200).json(wallet);
   } catch (error) {
     next(error);
   }
 };
+
 
 export const getWalletByUserId = async (
   req: Request,
@@ -155,6 +173,82 @@ export const withdrawFromOwnWallet = async (
   }
 };
 
+// export const sendMoneyToAnotherUser = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const session = await mongoose.startSession();
+//   try {
+//     session.startTransaction();
+
+//     const { receiverId, amount } = req.body;
+
+//     if (!receiverId || !amount || amount <= 0) {
+//       throw new AppError(
+//         "Receiver and valid amount required",
+//         httpStatus.BAD_REQUEST
+//       );
+//     }
+
+//     if (receiverId === req.user.userId) {
+//       throw new AppError(
+//         "Cannot send money to yourself",
+//         httpStatus.BAD_REQUEST
+//       );
+//     }
+
+//     const senderWallet = await Wallet.findOne({
+//       user: req.user.userId,
+//     }).session(session);
+//     const receiverWallet = await Wallet.findOne({ user: receiverId }).session(
+//       session
+//     );
+
+//     if (!senderWallet || !receiverWallet) {
+//       throw new AppError(
+//         "Sender or receiver wallet not found",
+//         httpStatus.NOT_FOUND
+//       );
+//     }
+
+//     if (senderWallet.balance < amount) {
+//       throw new AppError("Insufficient balance", httpStatus.BAD_REQUEST);
+//     }
+
+//     senderWallet.balance -= amount;
+//     receiverWallet.balance += amount;
+
+//     await senderWallet.save({ session });
+//     await receiverWallet.save({ session });
+
+//     const transaction = await Transaction.create(
+//       [
+//         {
+//           type: "send",
+//           amount,
+//           sender: req.user.userId,
+//           receiver: receiverId,
+//         },
+//       ],
+//       { session }
+//     );
+
+//     await session.commitTransaction();
+//     session.endSession();
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Money sent successfully",
+//       data: transaction[0],
+//     });
+//   } catch (error) {
+//     await session.abortTransaction();
+//     session.endSession();
+//     next(error);
+//   }
+// };
+
 export const sendMoneyToAnotherUser = async (
   req: Request,
   res: Response,
@@ -164,34 +258,28 @@ export const sendMoneyToAnotherUser = async (
   try {
     session.startTransaction();
 
-    const { receiverId, amount } = req.body;
+    const { recipientPhone, amount } = req.body;
 
-    if (!receiverId || !amount || amount <= 0) {
-      throw new AppError(
-        "Receiver and valid amount required",
-        httpStatus.BAD_REQUEST
-      );
+    if (!recipientPhone || !amount || amount <= 0) {
+      throw new AppError("Recipient and valid amount required", httpStatus.BAD_REQUEST);
     }
 
-    if (receiverId === req.user.userId) {
-      throw new AppError(
-        "Cannot send money to yourself",
-        httpStatus.BAD_REQUEST
-      );
+    // Cannot send money to self
+    if (recipientPhone === req.user.phone) {
+      throw new AppError("Cannot send money to yourself", httpStatus.BAD_REQUEST);
     }
 
-    const senderWallet = await Wallet.findOne({
-      user: req.user.userId,
-    }).session(session);
-    const receiverWallet = await Wallet.findOne({ user: receiverId }).session(
-      session
-    );
+    // Find receiver user by phone
+    const receiverUser = await User.findOne({ phone: recipientPhone });
+    if (!receiverUser) {
+      throw new AppError("Recipient not found", httpStatus.NOT_FOUND);
+    }
+
+    const senderWallet = await Wallet.findOne({ user: req.user.userId }).session(session);
+    const receiverWallet = await Wallet.findOne({ user: receiverUser._id }).session(session);
 
     if (!senderWallet || !receiverWallet) {
-      throw new AppError(
-        "Sender or receiver wallet not found",
-        httpStatus.NOT_FOUND
-      );
+      throw new AppError("Sender or receiver wallet not found", httpStatus.NOT_FOUND);
     }
 
     if (senderWallet.balance < amount) {
@@ -210,7 +298,7 @@ export const sendMoneyToAnotherUser = async (
           type: "send",
           amount,
           sender: req.user.userId,
-          receiver: receiverId,
+          receiver: receiverUser._id,
         },
       ],
       { session }
@@ -230,6 +318,8 @@ export const sendMoneyToAnotherUser = async (
     next(error);
   }
 };
+
+
 
 export const getMyWalletTransactions = async (
   req: Request,
