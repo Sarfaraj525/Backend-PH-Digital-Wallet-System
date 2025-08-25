@@ -20,23 +20,37 @@ const createUser = catchAsync(
   }
 );
 
-const updateUser = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.id;
+// Update logged-in user profile
+const updateMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const decodedToken = req.user as JwtPayload;
+  const payload = req.body;
 
-    const verifiedToken = req.user;
+  const user = await UserServices.updateUser(decodedToken.userId, payload, decodedToken);
 
-    const payload = req.body;
-    const user = await UserServices.updateUser(userId, payload, verifiedToken);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Profile updated successfully",
+    data: user,
+  });
+});
 
-    sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.CREATED,
-      message: "User Updated Successfully",
-      data: user,
-    });
-  }
-);
+// const updateUser = catchAsync(async (req, res) => {
+//   const verifiedToken = req.user as JwtPayload;
+//   const userId = verifiedToken.userId; // 👈 from token, not params
+//   const payload = req.body;
+
+//   const user = await UserServices.updateUser(userId, payload, verifiedToken);
+
+//   sendResponse(res, {
+//     success: true,
+//     statusCode: httpStatus.OK,
+//     message: "User Updated Successfully",
+//     data: user,
+//   });
+// });
+
+
 
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -72,6 +86,7 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
 export const UserController = {
   createUser,
   getAllUsers,
-  updateUser,
+  // updateUser,
+  updateMe,
   getMe,
 };

@@ -24,11 +24,20 @@ router.get(
 router.get("/me", checkAuth(...Object.values(Role)), UserController.getMe)
 
 
-router.patch(
-  "/:id",
-  validateRequest(updateUserZodSchema),
-  checkAuth(...Object.values(Role)),
-  UserController.updateUser
-);
+// router.patch(
+//   "/:id",
+//   validateRequest(updateUserZodSchema),
+//   checkAuth(...Object.values(Role)),
+//   UserController.updateUser
+// );
+
+// router.patch(
+//   "/me",
+//   validateRequest(updateUserZodSchema),
+//   checkAuth(...Object.values(Role)),
+//   UserController.updateUser
+// );
+
+router.patch("/me", validateRequest(updateUserZodSchema), checkAuth(...Object.values(Role)), UserController.updateMe);
 
 export const UserRoutes = router;

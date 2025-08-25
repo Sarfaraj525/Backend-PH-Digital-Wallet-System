@@ -57,6 +57,9 @@ export const updateUserZodSchema = z.object({
     })
     .optional(),
     confirmPassword: z.string({ invalid_type_error: "Confirm Password must be string" }),
+    // confirmPassword: z.string().optional(),
+    
+    
   phone: z
     .string({ invalid_type_error: "Phone Number must be string" })
     .regex(/^(?:\+8801\d{9}|01\d{9})$/, {
@@ -80,3 +83,6 @@ export const updateUserZodSchema = z.object({
     .max(200, { message: "Address cannot exceed 200 characters." })
     .optional(),
 });
+
+
+

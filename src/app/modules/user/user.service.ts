@@ -86,6 +86,9 @@ const updateUser = async (
   return newUpdatedUser;
 };
 
+
+
+
 const getAllUsers = async () => {
   const users = await User.find();
 

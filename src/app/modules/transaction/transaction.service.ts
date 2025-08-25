@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Transaction } from "./transaction.model";
 import { Wallet } from "../wallet/wallet.model";
 import { User } from "../user/user.model";
@@ -186,13 +187,79 @@ export const cashOut = async (
   }
 };
 
-export const getMyTransactions = async (userId: string) => {
-  const transactions = await Transaction.find({
-    $or: [{ sender: userId }, { receiver: userId }],
-  })
+export const getMyTransactions = async (
+  userId: string,
+  page = 1,
+  limit = 5,
+  type?: string,
+  startDate?: string,
+  endDate?: string
+) => {
+  const query: any = { $or: [{ sender: userId }, { receiver: userId }] };
+
+  if (type) query.type = type;
+  if (startDate || endDate) {
+    query.createdAt = {};
+    if (startDate) query.createdAt.$gte = new Date(startDate);
+    if (endDate) query.createdAt.$lte = new Date(endDate);
+  }
+
+  const totalItems = await Transaction.countDocuments(query);
+  const totalPages = Math.ceil(totalItems / limit);
+  const transactions = await Transaction.find(query)
     .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
     .populate("sender", "email role")
     .populate("receiver", "email role");
 
-  return transactions;
+  return {
+    data: transactions,
+    meta: { page, totalPages, totalItems },
+  };
+};
+
+// Get all transactions handled by an agent
+export const getAgentTransactions = async (
+  agentId: string,
+  page = 1,
+  limit = 10
+) => {
+  const query: any = {
+    $or: [{ sender: agentId }, { receiver: agentId }],
+    type: { $in: ["cash_in", "cash_out"] },
+  };
+
+  const totalItems = await Transaction.countDocuments(query);
+  const totalPages = Math.ceil(totalItems / limit);
+
+  const transactions = await Transaction.find(query)
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .populate("sender", "email role")
+    .populate("receiver", "email role");
+
+  return {
+    data: transactions,
+    meta: { page, totalPages, totalItems },
+  };
+};
+
+// Get agent summary (cash-in & cash-out totals)
+export const getAgentSummary = async (agentId: string) => {
+  const [cashInAgg] = await Transaction.aggregate([
+    { $match: { sender: agentId, type: "cash_in" } },
+    { $group: { _id: null, total: { $sum: "$amount" } } },
+  ]);
+
+  const [cashOutAgg] = await Transaction.aggregate([
+    { $match: { receiver: agentId, type: "cash_out" } },
+    { $group: { _id: null, total: { $sum: "$amount" } } },
+  ]);
+
+  return {
+    cashIn: cashInAgg?.total || 0,
+    cashOut: cashOutAgg?.total || 0,
+  };
 };
