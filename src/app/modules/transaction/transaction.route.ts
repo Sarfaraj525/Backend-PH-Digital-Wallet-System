@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import express from "express";
-import { cashInController, cashOutController, myTransactionsController } from "./transaction.controller";
+import { cashInController, cashOutController, getAgentSummaryController, myTransactionsController } from "./transaction.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 
 import { Role } from "../user/user.interface";
@@ -14,6 +14,8 @@ router.get("/me", checkAuth(Role.USER), myTransactionsController);
 router.post("/cash-in", checkAuth("AGENT"), cashInController);
 
 router.post("/cash-out", checkAuth("AGENT"), cashOutController);
+
+router.get("/agent-summary", checkAuth(Role.AGENT), getAgentSummaryController);
 
 // Agent transactions (NEW)
 router.get("/agent", checkAuth(Role.AGENT), async (req, res) => {

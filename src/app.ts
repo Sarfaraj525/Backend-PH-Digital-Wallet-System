@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import { AdminRoutes } from "./app/modules/admin/admin.route";
 import { TransactionRoutes } from "./app/modules/transaction/transaction.route";
 import { envVars } from "./app/config/env";
+import { AgentRoutes } from "./app/modules/agent/agent.routes";
 
 const app = express();
 
@@ -27,6 +28,10 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/admin", AdminRoutes);
+
+app.use("/api/v1/agent", AgentRoutes);
+
+
 
 
 app.use('/api/v1/transaction', TransactionRoutes);

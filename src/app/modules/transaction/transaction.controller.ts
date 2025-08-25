@@ -9,6 +9,7 @@ import {
   getMyTransactions,
   // getMyTransactions,
 } from "./transaction.service";
+import { Transaction } from "./transaction.model";
 // import { Transaction } from "./transaction.model";
 
 export const addMoneyController = async (req: Request, res: Response) => {
@@ -99,4 +100,28 @@ export const myTransactionsController = async (req: Request, res: Response) => {
   }
 };
 
+// Get agent summary (cash-in & cash-out totals)
+export const getAgentSummaryController = async (req: Request, res: Response) => {
+  try {
+    const agentId = req.user._id;
 
+    // Total cash-in
+    const [cashInAgg] = await Transaction.aggregate([
+      { $match: { sender: agentId, type: "cash_in" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+
+    // Total cash-out
+    const [cashOutAgg] = await Transaction.aggregate([
+      { $match: { receiver: agentId, type: "cash_out" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+
+    res.status(200).json({
+      cashIn: cashInAgg?.total || 0,
+      cashOut: cashOutAgg?.total || 0,
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
